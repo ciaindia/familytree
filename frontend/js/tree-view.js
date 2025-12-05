@@ -49,6 +49,11 @@ async function loadTreeData() {
         buildTreeStructure();
         renderTree();
         renderPersonsList();
+
+        // Auto-center the tree after rendering
+        setTimeout(() => {
+            centerTree();
+        }, 100);
     } catch (error) {
         console.error('Error loading tree data:', error);
         alert('Error loading tree data: ' + error.message);
@@ -272,6 +277,7 @@ function renderTree() {
                 // Add image
                 group.append('image')
                     .attr('xlink:href', `${window.APP_CONFIG?.BASE_URL || 'http://localhost:5000'}${personData.profile_photo}`)
+                    .attr('crossorigin', 'anonymous')
                     .attr('x', -nodeRadius + 2)
                     .attr('y', -nodeRadius + 2)
                     .attr('width', (nodeRadius - 2) * 2)
@@ -345,6 +351,7 @@ function renderTree() {
                     // Add spouse image
                     spouseGroup.append('image')
                         .attr('xlink:href', `${window.APP_CONFIG?.BASE_URL || 'http://localhost:5000'}${spouseData.profile_photo}`)
+                        .attr('crossorigin', 'anonymous')
                         .attr('x', -nodeRadius + 2)
                         .attr('y', -nodeRadius + 2)
                         .attr('width', (nodeRadius - 2) * 2)
@@ -870,7 +877,81 @@ function clearPhotoPreview() {
 }
 
 function clearEditPhotoPreview() {
-    document.getElementById('editProfilePhoto').value = '';
     document.getElementById('editPhotoPreview').style.display = 'none';
     document.getElementById('editPreviewImage').src = '';
+}
+
+
+// Export tree as HD JPG (2x scale)
+async function exportAsHDJPG() {
+    await exportAsJPG(2, 'HD');
+}
+
+// Export tree as 4K JPG (4x scale)
+async function exportAs4KJPG() {
+    await exportAsJPG(4, '4K');
+}
+
+// Common JPG export function
+async function exportAsJPG(scale, quality) {
+    if (!svg || !g) {
+        alert('Please wait for the tree to load first');
+        return;
+    }
+
+    try {
+        const treeName = document.getElementById('treeName').textContent || 'family-tree';
+        const svgElement = document.getElementById('treeSvg');
+        const treeContainer = document.getElementById('treeVisualization');
+
+        // Save original state
+        const originalTransform = g.attr('transform');
+        const originalWidth = svgElement.getAttribute('width');
+        const originalHeight = svgElement.getAttribute('height');
+
+        // Get full tree bounding box
+        const bbox = g.node().getBBox();
+        const padding = 100;
+        const fullWidth = bbox.width + (padding * 2);
+        const fullHeight = bbox.height + (padding * 2);
+
+        // Temporarily adjust SVG to show full tree
+        svgElement.setAttribute('width', fullWidth);
+        svgElement.setAttribute('height', fullHeight);
+        svgElement.setAttribute('viewBox', `${bbox.x - padding} ${bbox.y - padding} ${fullWidth} ${fullHeight}`);
+        g.attr('transform', null); // Remove zoom transform
+
+        // Small delay to let DOM update
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Capture with html2canvas at specified scale
+        const canvas = await html2canvas(treeContainer, {
+            backgroundColor: '#1a1a2e',
+            scale: scale,
+            logging: false,
+            useCORS: true,      // Use CORS for images
+            allowTaint: false   // Don't taint canvas
+        });
+
+        // Restore original state
+        svgElement.setAttribute('width', originalWidth || '100%');
+        svgElement.setAttribute('height', originalHeight || '600');
+        svgElement.removeAttribute('viewBox');
+        if (originalTransform) {
+            g.attr('transform', originalTransform);
+        }
+
+        // Download as JPG with high quality
+        canvas.toBlob(function (blob) {
+            const link = document.createElement('a');
+            link.download = `${treeName.replace(/\s+/g, '-').toLowerCase()}-tree-${quality}.jpg`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }, 'image/jpeg', 0.95); // 95% quality JPG
+
+    } catch (error) {
+        console.error(`Error exporting ${quality} JPG:`, error);
+        alert(`Error exporting ${quality} JPG: ` + error.message);
+    }
 }

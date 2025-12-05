@@ -36,6 +36,8 @@
             <button onclick="showAddRelationshipModal()" class="btn btn-primary">+ Add Child</button>
             <button onclick="showAddMarriageModal()" class="btn btn-primary">+ Add Marriage</button>
             <button onclick="centerTree()" class="btn btn-secondary">Center Tree</button>
+            <button onclick="exportAsHDJPG()" class="btn btn-secondary">📥 Download HD JPG</button>
+            <button onclick="exportAs4KJPG()" class="btn btn-secondary">� Download 4K JPG</button>
         </div>
 
         <div id="treeVisualization" class="tree-visualization">
@@ -253,6 +255,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Export libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script src="js/config.js"></script>
     <script src="js/api.js"></script>
