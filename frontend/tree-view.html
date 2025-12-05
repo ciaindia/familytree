@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Tree View</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/tree-view.css">
+    <!-- D3.js for tree visualization -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">🌳 <span id="treeName">Family Tree</span></div>
+            <div class="nav-menu">
+                <button onclick="expandAll()" class="btn btn-secondary">Expand All</button>
+                <button onclick="collapseAll()" class="btn btn-secondary">Collapse All</button>
+                <button onclick="window.location.href='dashboard.html'" class="btn btn-secondary">Back to
+                    Dashboard</button>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="tree-controls">
+            <button onclick="showAddPersonModal()" class="btn btn-primary">+ Add Person</button>
+            <button onclick="showAddRelationshipModal()" class="btn btn-primary">+ Add Child</button>
+            <button onclick="showAddMarriageModal()" class="btn btn-primary">+ Add Marriage</button>
+            <button onclick="centerTree()" class="btn btn-secondary">Center Tree</button>
+        </div>
+
+        <div id="treeVisualization" class="tree-visualization">
+            <svg id="treeSvg"></svg>
+        </div>
+
+        <div id="personsList" class="persons-list">
+            <h2>Family Members</h2>
+            <div id="personsGrid" class="persons-grid">
+                <!-- Persons will be listed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Person Modal -->
+    <div id="addPersonModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Family Member</h2>
+                <span class="close" onclick="closeAddPersonModal()">&times;</span>
+            </div>
+            <form id="addPersonForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name *</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="middleName">Middle Name</label>
+                        <input type="text" id="middleName">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gender">Gender *</label>
+                        <select id="gender" required>
+                            <option value="">Select...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input type="date" id="dateOfBirth">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="isAlive" checked>
+                            Is Alive
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="occupation">Occupation</label>
+                    <input type="text" id="occupation">
+                </div>
+                <div class="form-group">
+                    <label for="bio">Biography</label>
+                    <textarea id="bio" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="profilePhoto">Profile Photo</label>
+                    <input type="file" id="profilePhoto" accept="image/*">
+                    <div id="photoPreview" class="photo-preview" style="display: none;">
+                        <img id="previewImage" src="" alt="Preview">
+                        <button type="button" onclick="clearPhotoPreview()" class="btn-remove-photo">✕ Remove</button>
+                    </div>
+                    <small class="form-help">Max file size: 5MB. Supported formats: JPEG, PNG, GIF, WebP</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Person</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Relationship Modal -->
+    <div id="addRelationshipModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Child</h2>
+                <span class="close" onclick="closeAddRelationshipModal()">&times;</span>
+            </div>
+            <form id="addRelationshipForm">
+                <div class="form-group">
+                    <label for="parentId">Parent</label>
+                    <select id="parentId" required>
+                        <option value="">Select parent...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="childId">Child</label>
+                    <select id="childId" required>
+                        <option value="">Select child...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="relationshipType">Relationship Type</label>
+                    <select id="relationshipType">
+                        <option value="Biological">Biological</option>
+                        <option value="Adopted">Adopted</option>
+                        <option value="Step">Step</option>
+                        <option value="Foster">Foster</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Relationship</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Marriage Modal -->
+    <div id="addMarriageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Marriage</h2>
+                <span class="close" onclick="closeAddMarriageModal()">&times;</span>
+            </div>
+            <form id="addMarriageForm">
+                <div class="form-group">
+                    <label for="spouse1Id">Spouse 1</label>
+                    <select id="spouse1Id" required>
+                        <option value="">Select spouse...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="spouse2Id">Spouse 2</label>
+                    <select id="spouse2Id" required>
+                        <option value="">Select spouse...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="marriageDate">Marriage Date</label>
+                    <input type="date" id="marriageDate">
+                </div>
+                <div class="form-group">
+                    <label for="marriagePlace">Marriage Place</label>
+                    <input type="text" id="marriagePlace">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Marriage</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Person Modal -->
+    <div id="editPersonModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Family Member</h2>
+                <span class="close" onclick="closeEditPersonModal()">&times;</span>
+            </div>
+            <form id="editPersonForm">
+                <input type="hidden" id="editPersonId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editFirstName">First Name *</label>
+                        <input type="text" id="editFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMiddleName">Middle Name</label>
+                        <input type="text" id="editMiddleName">
+                    </div>
+                    <div class="form-group">
+                        <label for="editLastName">Last Name</label>
+                        <input type="text" id="editLastName">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editGender">Gender *</label>
+                        <select id="editGender" required>
+                            <option value="">Select...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDateOfBirth">Date of Birth</label>
+                        <input type="date" id="editDateOfBirth">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="editIsAlive" checked>
+                            Is Alive
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editOccupation">Occupation</label>
+                    <input type="text" id="editOccupation">
+                </div>
+                <div class="form-group">
+                    <label for="editBio">Biography</label>
+                    <textarea id="editBio" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editProfilePhoto">Profile Photo</label>
+                    <div id="currentPhotoDisplay" class="current-photo" style="display: none;">
+                        <img id="currentPhotoImage" src="" alt="Current photo">
+                        <button type="button" onclick="deleteCurrentPhoto()" class="btn-remove-photo">✕ Delete
+                            Photo</button>
+                    </div>
+                    <input type="file" id="editProfilePhoto" accept="image/*">
+                    <div id="editPhotoPreview" class="photo-preview" style="display: none;">
+                        <img id="editPreviewImage" src="" alt="Preview">
+                        <button type="button" onclick="clearEditPhotoPreview()" class="btn-remove-photo">✕
+                            Remove</button>
+                    </div>
+                    <small class="form-help">Max file size: 5MB. Supported formats: JPEG, PNG, GIF, WebP</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Person</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/tree-view.js"></script>
+</body>
+
+</html>

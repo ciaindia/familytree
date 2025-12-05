@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Tree - Dashboard</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">🌳 Family Tree</div>
+            <div class="nav-menu">
+                <span id="userFullName"></span>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>My Family Trees</h1>
+            <button onclick="showCreateTreeModal()" class="btn btn-primary">+ Create New Tree</button>
+        </div>
+
+        <div id="treesGrid" class="trees-grid">
+            <!-- Trees will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Create Tree Modal -->
+    <div id="createTreeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Family Tree</h2>
+                <span class="close" onclick="closeCreateTreeModal()">&times;</span>
+            </div>
+            <form id="createTreeForm">
+                <div class="form-group">
+                    <label for="treeName">Tree Name</label>
+                    <input type="text" id="treeName" required>
+                </div>
+                <div class="form-group">
+                    <label for="treeDescription">Description</label>
+                    <textarea id="treeDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="isPublic">
+                        Make this tree public
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Tree</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>
