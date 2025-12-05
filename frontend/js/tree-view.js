@@ -700,7 +700,18 @@ function editPerson(personId) {
     document.getElementById('editMiddleName').value = person.middle_name || '';
     document.getElementById('editLastName').value = person.last_name || '';
     document.getElementById('editGender').value = person.gender;
-    document.getElementById('editDateOfBirth').value = person.date_of_birth || '';
+
+    // Format date for HTML5 date input (YYYY-MM-DD)
+    if (person.date_of_birth) {
+        const dob = new Date(person.date_of_birth);
+        const year = dob.getFullYear();
+        const month = String(dob.getMonth() + 1).padStart(2, '0');
+        const day = String(dob.getDate()).padStart(2, '0');
+        document.getElementById('editDateOfBirth').value = `${year}-${month}-${day}`;
+    } else {
+        document.getElementById('editDateOfBirth').value = '';
+    }
+
     document.getElementById('editIsAlive').checked = person.is_alive;
     document.getElementById('editOccupation').value = person.occupation || '';
     document.getElementById('editBio').value = person.bio || '';
