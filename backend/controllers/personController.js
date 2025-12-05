@@ -195,18 +195,18 @@ const updatePerson = async (req, res) => {
              WHERE person_id = ?`,
             [
                 firstName,
-                middleName,
-                lastName,
-                maidenName,
+                middleName || null,
+                lastName || null,
+                maidenName || null,
                 gender,
-                dateOfBirth,
-                dateOfDeath,
+                dateOfBirth || null,  // Convert empty string to null
+                dateOfDeath || null,  // Convert empty string to null
                 isAlive,
-                birthPlace,
-                deathPlace,
-                occupation,
-                bio,
-                profilePhoto,
+                birthPlace || null,
+                deathPlace || null,
+                occupation || null,
+                bio || null,
+                profilePhoto || null,
                 id
             ]
         );
