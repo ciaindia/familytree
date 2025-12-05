@@ -1,5 +1,5 @@
-// API Configuration
-const API_BASE_URL = 'http://localhost:5000/api';
+// API Configuration (uses config.js for environment detection)
+const API_BASE_URL = window.APP_CONFIG?.API_BASE_URL || 'http://localhost:5000/api';
 
 // API Helper Functions
 const api = {

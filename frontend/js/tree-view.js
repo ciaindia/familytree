@@ -271,7 +271,7 @@ function renderTree() {
 
                 // Add image
                 group.append('image')
-                    .attr('xlink:href', `http://localhost:5000${personData.profile_photo}`)
+                    .attr('xlink:href', `${window.APP_CONFIG?.BASE_URL || 'http://localhost:5000'}${personData.profile_photo}`)
                     .attr('x', -nodeRadius + 2)
                     .attr('y', -nodeRadius + 2)
                     .attr('width', (nodeRadius - 2) * 2)
@@ -344,7 +344,7 @@ function renderTree() {
 
                     // Add spouse image
                     spouseGroup.append('image')
-                        .attr('xlink:href', `http://localhost:5000${spouseData.profile_photo}`)
+                        .attr('xlink:href', `${window.APP_CONFIG?.BASE_URL || 'http://localhost:5000'}${spouseData.profile_photo}`)
                         .attr('x', -nodeRadius + 2)
                         .attr('y', -nodeRadius + 2)
                         .attr('width', (nodeRadius - 2) * 2)
@@ -488,7 +488,7 @@ function renderPersonsList() {
 
     grid.innerHTML = persons.map(person => {
         const photoUrl = person.profile_photo
-            ? `http://localhost:5000${person.profile_photo}`
+            ? `${window.APP_CONFIG?.BASE_URL || 'http://localhost:5000'}${person.profile_photo}`
             : null;
         const initials = person.first_name.charAt(0) + (person.last_name ? person.last_name.charAt(0) : '');
 
@@ -709,7 +709,7 @@ function editPerson(personId) {
     const currentPhotoDisplay = document.getElementById('currentPhotoDisplay');
     const currentPhotoImage = document.getElementById('currentPhotoImage');
     if (person.profile_photo) {
-        currentPhotoImage.src = `http://localhost:5000${person.profile_photo}`;
+        currentPhotoImage.src = `${window.APP_CONFIG?.BASE_URL || 'http://localhost:5000'}${person.profile_photo}`;
         currentPhotoDisplay.style.display = 'block';
     } else {
         currentPhotoDisplay.style.display = 'none';
@@ -779,7 +779,7 @@ async function uploadPersonPhoto(personId, file) {
 
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/persons/${personId}/photo`, {
+        const response = await fetch(`${window.APP_CONFIG?.API_BASE_URL || 'http://localhost:5000/api'}/persons/${personId}/photo`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
