@@ -199,8 +199,8 @@ const updatePerson = async (req, res) => {
                 lastName || null,
                 maidenName || null,
                 gender,
-                dateOfBirth || null,  // Convert empty string to null
-                dateOfDeath || null,  // Convert empty string to null
+                (dateOfBirth && dateOfBirth !== '') ? dateOfBirth : null,
+                (dateOfDeath && dateOfDeath !== '') ? dateOfDeath : null,
                 isAlive,
                 birthPlace || null,
                 deathPlace || null,
