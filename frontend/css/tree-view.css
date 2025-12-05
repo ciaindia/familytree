@@ -20,6 +20,13 @@
     cursor: grabbing;
 }
 
+/* Improve image quality in SVG */
+#treeSvg image {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    shape-rendering: geometricPrecision;
+}
+
 /* Tree Node Styles */
 .node {
     cursor: pointer;

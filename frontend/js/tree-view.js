@@ -278,6 +278,8 @@ function renderTree() {
                 group.append('image')
                     .attr('xlink:href', `${window.APP_CONFIG?.BASE_URL || 'http://localhost:5000'}${personData.profile_photo}`)
                     .attr('crossorigin', 'anonymous')
+                    .attr('preserveAspectRatio', 'xMidYMid slice')
+                    .attr('image-rendering', 'optimizeQuality')
                     .attr('x', -nodeRadius + 2)
                     .attr('y', -nodeRadius + 2)
                     .attr('width', (nodeRadius - 2) * 2)
@@ -352,6 +354,8 @@ function renderTree() {
                     spouseGroup.append('image')
                         .attr('xlink:href', `${window.APP_CONFIG?.BASE_URL || 'http://localhost:5000'}${spouseData.profile_photo}`)
                         .attr('crossorigin', 'anonymous')
+                        .attr('preserveAspectRatio', 'xMidYMid slice')
+                        .attr('image-rendering', 'optimizeQuality')
                         .attr('x', -nodeRadius + 2)
                         .attr('y', -nodeRadius + 2)
                         .attr('width', (nodeRadius - 2) * 2)
@@ -921,6 +925,10 @@ async function exportAsJPG(scale, quality) {
         svgElement.setAttribute('viewBox', `${bbox.x - padding} ${bbox.y - padding} ${fullWidth} ${fullHeight}`);
         g.attr('transform', null); // Remove zoom transform
 
+        // Hide all images (keep only initials)
+        const images = svgElement.querySelectorAll('image');
+        images.forEach(img => img.style.display = 'none');
+
         // Small delay to let DOM update
         await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -932,6 +940,9 @@ async function exportAsJPG(scale, quality) {
             useCORS: true,      // Use CORS for images
             allowTaint: false   // Don't taint canvas
         });
+
+        // Restore images
+        images.forEach(img => img.style.display = '');
 
         // Restore original state
         svgElement.setAttribute('width', originalWidth || '100%');
